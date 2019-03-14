@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html ng-app="MadhuProject">
+
+<head>
+  <title>Employee Reimbursement</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>-->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js"></script>
+  <script src="https://rawgit.com/dwmkerr/angular-modal-service/master/dst/angular-modal-service.js"></script>
+   <script type="text/javascript" src="https://vitalets.github.io/angular-xeditable/dist/js/xeditable.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://vitalets.github.io/angular-xeditable/dist/css/xeditable.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+ 
+ 
+</head>
+
+<body ng-controller="traffic">
+
+
+<div class="container">
+  <h2><span style="color: red">Traffic Violation</span></h2>
+  <span style="color: red">{{messge}}</span>
+
+       <div style="overflow-x:auto;padding: 20px;margin-bottom: 20px!important;" ng-show = "IsVisible" > 
+        <div class="bill" style=" margin-top: -40px; text-align: center!important;">
+        <table class="table table-bordered bill" >
+          <thead style="font-size: 12px!important; background-color: antiquewhite!important;">
+            <h4> {{title || 'empty'}} </h4>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Number</th>      
+              <th>Img</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr ng-repeat="item in traffic track by $index">
+              <td><div class="popover-wrapper">  {{item.key.date || 'empty' }}</a> </div></td>
+              <td><div class="popover-wrapper">  {{item.key.name || 'empty' }}</a> </div></td>
+              <td><div class="popover-wrapper">  {{item.key.emailId || 'empty' }}</a> </div></td>
+              <td><div class="popover-wrapper">  {{item.key.number || 'empty' }}</a></div></td>   
+              <td><div ng-repeat="step in item.key.images"><img class="thumb" style="width:500px;height:500px;" ng-src="{{step}}"  /></div></td> 
+          </tr>
+          
+            </tbody>
+          
+        </table>
+
+      </div>
+
+
+</div>
+
+
+<script>
+  var mainapp = angular.module('MadhuProject', ['ngRoute', 'ngAnimate', 'angularModalService', 'xeditable']);
+
+  mainapp.controller('traffic', ['$scope',
+ 
+  '$location',
+  '$http',
+  '$filter',
+  function ($scope,
+   
+    $location,
+    $http,
+    $filter) {
+   
+   
+submit();
+
+     function submit() {
+        $scope.messge = "Fetching Data";
+      $http.post('/getDataFromDb').success((res,status)=>{
+      
+
+        console.log(res[0]);
+        $scope.IsVisible = true;
+        $scope.messge = "";
+        $scope.traffic = res;
+
+        
+
+      }).error((err)=>{
+
+        console.log(err);
+      })
+
+    };
+
+  }]);
+</script>
+
+</body>
+</html>

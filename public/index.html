@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html ng-app="MadhuProject">
+
+<head>
+  <title>Employee Reimbursement</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>-->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js"></script>
+  <script src="https://rawgit.com/dwmkerr/angular-modal-service/master/dst/angular-modal-service.js"></script>
+   <script type="text/javascript" src="https://vitalets.github.io/angular-xeditable/dist/js/xeditable.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://vitalets.github.io/angular-xeditable/dist/css/xeditable.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+ 
+ 
+</head>
+
+<body ng-controller="HomePageController">
+
+
+<div class="container">
+  <h2><span style="color: red">Traffic Violation</span></h2>
+<!--   <button style=" float: right" class="btn btn-info" ng:click="nagivation()"> Traffic Server</button> -->
+  <!-- onSelectedSendmail(); -->
+  <form class="form-horizontal" role="form" ng-submit='submit();'>
+    <div class="col-md-12 col-sm-12">
+     <div class="form-group col-md-4 col-sm-6">
+     
+     <div class="col-md-12 col-sm-12">
+      <label >Date</label>
+        <input type="date" class="form-control input-sm" id="date" name="date" placeholder="Date" ng-model='date' required disabled/>
+     </div></div>
+        
+    
+    <div class="form-group col-md-4 col-sm-6">
+     <div class="col-md-12 col-sm-12">
+      <label > Name</label>
+        <input type="text" class="form-control input-sm" id="EmployeeName" placeholder="Enter name" ng-model='name' required ng:change="onChange()"/>
+    </div> </div>
+     <div class="form-group col-md-4 col-sm-6">
+     <div class="col-md-12 col-sm-12">
+      <label for="email"> Email</label>
+        <input type="email" class="form-control input-sm" id="email" name="email"  ng-model='emailId' required />
+    </div>
+    </div>
+     <div class="form-group col-md-4 col-sm-6">
+     <div class="col-md-12 col-sm-12">
+      <label for="email"> Number</label>
+        <input type="number" class="form-control input-sm" id="email" name="email"  ng-model='number' required />
+    </div>
+    </div>
+       <div class="form-group col-md-4 col-sm-6">
+     <div class="col-md-12 col-sm-12">
+      <label for="email"> Upload</label>
+        <input type='file' ng-model-instant onchange="angular.element(this).scope().imageUpload(event)" multiple/>
+    </div>
+  
+    </div>
+    <div class="row">
+           <div class="col-md-12 col-sm-12">
+    <div class="col-md-6 col-sm-6" ng-repeat="step in stepsModel">
+      <img class="thumb" style="width:100px;height:100px;" ng-src="{{step}}"/></div> 
+   </div>
+    </div>
+    </div>
+    
+  
+    <!-- spinner  -->
+<div align="center" ng-show="loading" style="margin-top: -300px;"> <img id="mySpinner" src="icon/jjs.gif"/></div>
+           <div align="center" class="col-md-12 col-sm-12" style=" margin-top: 30px!important;margin-bottom: 30px;">
+            <button type="submit" class="btn btn-success btn-sm" style="float: right;width: 100px;margin: 3px;">Submit</button> 
+            <br>
+            <span style="color: red">{{messge}}</span>
+    </div>
+</form>
+</div>
+
+</div>
+
+
+<script>
+  var mainapp = angular.module('MadhuProject', ['ngRoute', 'ngAnimate', 'angularModalService', 'xeditable']);
+
+  mainapp.controller('HomePageController', ['$scope',
+ 
+  '$location',
+  '$http',
+  '$filter',
+  '$window',
+  function ($scope,
+   
+    $location,
+    $http,
+    $filter,$window) {
+   
+    $scope.one = false;
+    $scope.two = false;
+
+    $scope.animate = function () {
+      $scope.one = !$scope.one;
+      $scope.two = !$scope.two;
+    };
+    // auto number generation code function called 
+  
+    $scope.autoLoading = true;
+    $scope.cost = 0;
+    $scope.date = new Date();
+
+    // for image   
+    //https://stackoverflow.com/questions/17216806/angularjs-uploading-an-image-with-ng-upload
+    $scope.stepsModel = [];
+
+    //This function Takes the Image in the user and send to the  email via  node js server. 
+    $scope.imageUpload = function (event) {
+      var files = event.target.files; //FileList object
+
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var reader = new FileReader();
+        reader.onload = $scope.imageIsLoaded;
+        reader.readAsDataURL(file);
+      }
+    }
+    $scope.imageIsLoaded = function (e) {
+      $scope.$apply(function () {
+        $scope.stepsModel.push(e.target.result);
+      });
+    }
+
+    // This Function Send the data to the Cloudant DB (bluemix).
+    // Stores the data in the JSON format 
+    // How Ever we Send the data. That is the final Schema in the DB. 
+    $scope.submit = function () {
+      
+      var data = {
+        emailId:$scope.emailId,
+        name:$scope.name,
+        images:$scope.stepsModel,
+        number:$scope.number
+      }
+
+  
+      $http.post('/postDataTOTheDb',data).success((res,status)=>{
+        $scope.messge = "Uploading Data";
+
+        console.log(res);
+        if(status == 202){
+          $scope.messge = " Submited Successfully ...";
+          reset();
+        }
+
+      }).error((err)=>{
+
+        console.log(err);
+      })
+
+      console.log('Data Store in the DB', data);
+
+    };
+
+    function reset(){
+        $scope.emailId = "";
+        $scope.name = " ";
+        $scope.stepsModel = [];
+        $scope.number ='';
+    };
+    $scope.onChange = function(){
+      $scope.messge = " ";
+  
+    };
+    $scope.nagivation = function(){
+      $window.location = "#/trafficServe.html";
+
+    }
+
+  }]);
+</script>
+
+</body>
+</html>

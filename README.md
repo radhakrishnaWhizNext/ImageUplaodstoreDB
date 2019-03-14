@@ -1,5 +1,4 @@
-# ImageUplaodstoreDB
-# Node.js Starter Overview
+# ImageUplaodstoreDB node application 
     Run the app locally
     
     Install Node.js
